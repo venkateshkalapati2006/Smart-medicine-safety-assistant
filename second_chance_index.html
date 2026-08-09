@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Second Chance - AI Medicine Safety Assistant">
+<title>Second Chance | Medicine Safety Assistant</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:Inter,Arial,sans-serif;background:#f8fafc;color:#172238;line-height:1.5}
+button,input{font:inherit}
+button{cursor:pointer}
+:root{
+ --primary:#2b9d98;--primary-dark:#238b87;--primary-light:#e8f4f4;
+ --dark:#172238;--text:#3c5576;--muted:#667a99;--border:#dce4ec;
+ --white:#fff;--danger:#dc5353;--warning:#e99b27;--success:#2c9b62
+}
+.navbar{height:78px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:1000}
+.logo-area{display:flex;align-items:center;gap:12px}
+.logo-icon{width:46px;height:46px;border-radius:15px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center}
+.logo-text h2{font-size:23px}.logo-text p{font-size:13px;color:var(--muted)}
+.desktop-nav{display:flex;align-items:center;gap:8px}
+.nav-link{display:flex;align-items:center;gap:8px;padding:11px 16px;border-radius:25px;text-decoration:none;color:#42516a;font-size:15px;font-weight:500}
+.nav-link:hover{background:var(--primary-light);color:var(--primary)}
+.nav-link.active{background:var(--primary);color:#fff}
+.login-button,.logout-button{display:flex;align-items:center;gap:8px;border-radius:25px;font-weight:600}
+.login-button{border:0;background:var(--dark);color:#fff;padding:11px 18px}
+.logout-button{background:#fff;border:1px solid var(--border);padding:9px 14px;color:var(--dark)}
+.user-area{display:none;align-items:center;gap:10px}.user-name{font-size:14px;font-weight:600}
+.menu-button{display:none;background:transparent;border:0;color:var(--dark)}
+.mobile-nav{display:none;background:#fff;border-bottom:1px solid var(--border);padding:10px 15px}
+.mobile-nav.show{display:flex;flex-direction:column}
+.mobile-nav a{display:flex;align-items:center;gap:10px;padding:14px;color:var(--dark);text-decoration:none;border-radius:10px}
+
+.hero{min-height:590px;padding:80px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border:1px solid #b9dede;background:var(--primary-light);color:var(--primary);border-radius:30px;font-size:14px;font-weight:600;margin-bottom:28px}
+.hero h1{font-size:clamp(52px,7vw,82px);line-height:1;letter-spacing:-3px;margin-bottom:18px;font-weight:800}
+.hero h2{font-size:clamp(25px,3vw,35px);color:var(--primary);font-weight:500;margin-bottom:28px}
+.hero-description{max-width:780px;color:var(--text);font-size:20px;line-height:1.7;margin-bottom:35px}
+.hero-buttons{display:flex;gap:16px;margin-bottom:30px}
+.primary-button,.secondary-button{min-height:62px;padding:0 30px;border-radius:35px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:17px;font-weight:600;transition:.25s}
+.primary-button{background:var(--primary);color:#fff;border:2px solid var(--primary)}
+.primary-button:hover{background:var(--primary-dark);transform:translateY(-2px)}
+.secondary-button{background:#fff;color:#263b5b;border:1px solid #c7d4e3}
+.secondary-button:hover{border-color:var(--primary);color:var(--primary)}
+.hero-disclaimer{max-width:900px;color:var(--muted);font-size:15px}
+.section{padding:80px 20px}
+.section-title{text-align:center;margin-bottom:50px}
+.section-title h2{font-size:42px;margin-bottom:10px}.section-title p{color:var(--text);font-size:18px}
+.steps{max-width:1400px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:25px}
+.step-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:30px;min-height:235px;transition:.25s}
+.step-card:hover{transform:translateY(-5px);box-shadow:0 10px 30px rgba(30,50,80,.08)}
+.step-icon{width:62px;height:62px;border-radius:16px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin-bottom:22px}
+.step-card h3{font-size:19px;margin-bottom:12px}.step-card p{color:var(--text)}
+.info-grid{max-width:1400px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:25px}
+.info-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:30px;display:flex;gap:20px}
+.info-icon{color:var(--primary);min-width:35px}.info-card h3{margin-bottom:10px}.info-card p{color:var(--text)}
+
+#scannerSection{display:none;background:#f8fafc}
+.scan-container{max-width:960px;margin:auto}
+.scan-header{text-align:center;margin-bottom:42px}
+.scan-header h1{font-size:42px;margin-bottom:10px}.scan-header p{color:var(--text);font-size:19px}
+.scan-options{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:40px}
+.scan-option{min-height:215px;border:2px dashed #c7d7e8;border-radius:22px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:.25s}
+.scan-option:hover{border-color:var(--primary);background:#f1fafa;transform:translateY(-2px)}
+.camera-option{border-color:var(--primary);background:#eef8f8}
+.scan-option-icon{width:60px;height:60px;color:var(--primary);display:flex;align-items:center;justify-content:center;margin-bottom:15px}
+.scan-option h3{font-size:20px;margin-bottom:8px}.scan-option p{color:#66809f;font-size:15px}
+.camera-container{display:none;background:var(--dark);border-radius:20px;padding:20px;margin-bottom:25px;text-align:center}
+.camera-container video{width:100%;max-height:450px;object-fit:cover;border-radius:15px;background:#000}
+.camera-buttons{display:flex;justify-content:center;gap:12px;margin-top:15px}
+.image-preview{display:none;background:#fff;border:1px solid var(--border);border-radius:20px;padding:25px;text-align:center;margin-bottom:25px}
+.image-preview h3{margin-bottom:18px}.image-preview img{display:block;max-width:100%;max-height:350px;margin:0 auto 20px;border-radius:15px;border:1px solid var(--border)}
+.medicine-input-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:30px}
+.medicine-input-card h3{font-size:18px;margin-bottom:5px}.medicine-input-card h3 span{font-weight:400;color:#64748b}
+.medicine-input-card>p{color:#66809f;margin-bottom:18px}
+.medicine-input-row{display:flex;gap:10px}.medicine-input-row input{flex:1;height:50px;border:1px solid #cbd5e1;border-radius:10px;padding:0 15px;outline:0}
+.medicine-input-row input:focus{border-color:var(--primary)}
+.add-button{height:50px;padding:0 20px;background:var(--dark);color:#fff;border:0;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:600}
+.medicine-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.medicine-tag{background:var(--primary-light);color:#238f8b;padding:8px 12px;border-radius:20px;display:flex;align-items:center;gap:8px;font-size:14px}
+.medicine-tag button{border:0;background:transparent;color:#238f8b;font-size:17px}
+.analyze-buttons{display:grid;grid-template-columns:1fr 260px;gap:15px}
+.analyze-button{height:64px;border:0;border-radius:35px;background:#91cfcc;color:#fff;font-size:19px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:not-allowed}
+.analyze-button.enabled{background:var(--primary);cursor:pointer}.analyze-button.enabled:hover{background:var(--primary-dark)}
+.demo-button{height:64px;background:#fff;color:#263b5b;border:1px solid #c7d4e3;border-radius:35px;font-size:17px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px}
+.analysis-loading{display:none;text-align:center;background:#fff;border-radius:20px;padding:35px;margin-top:25px;border:1px solid var(--border)}
+.loader{width:40px;height:40px;border:4px solid #dce4ec;border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 15px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+#resultsSection{display:none;background:#fff}
+.results-container{max-width:1200px;margin:auto}
+.result-header{background:var(--dark);color:#fff;border-radius:20px;padding:30px;margin-bottom:25px}
+.result-header h2{font-size:28px}.result-header p{color:#b9c7d9;margin-top:5px}
+.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.result-card{background:#f8fafc;border:1px solid var(--border);border-radius:18px;padding:25px}
+.result-card h3{margin-bottom:12px}.result-card p{color:var(--text)}
+.status{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:20px;font-size:13px;font-weight:600;margin-bottom:12px}
+.status.warning{background:#fff4df;color:var(--warning)}.status.safe{background:#e7f7ee;color:var(--success)}.status.danger{background:#ffe9e9;color:var(--danger)}
+.result-input{width:100%;height:45px;padding:0 12px;border:1px solid #cbd5e1;border-radius:10px;outline:0;margin-top:10px}
+.small-action{min-height:45px;padding:0 18px;background:var(--primary);color:#fff;border:0;border-radius:10px;margin-top:10px;font-weight:600}
+
+.saved-section{background:#fff;padding:80px 20px}.saved-container{max-width:1000px;margin:auto}
+.saved-empty{text-align:center;padding:50px;border:1px dashed #cbd5e1;border-radius:20px;color:var(--muted);background:#fbfcfd}
+.saved-item{background:#f8fafc;border:1px solid var(--border);border-radius:18px;padding:22px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.saved-item p{color:var(--muted);font-size:14px}.delete-saved{border:0;background:#ffe9e9;color:var(--danger);padding:9px 14px;border-radius:10px}
+
+footer{background:var(--dark);color:#fff;padding:45px 30px 20px}
+.footer-content{max-width:1400px;margin:auto;display:flex;justify-content:space-between;gap:30px}
+.footer-content p{color:#b9c7d9}.footer-links{display:flex;gap:25px}.footer-links a{color:#fff;text-decoration:none}
+.footer-bottom{max-width:1400px;margin:30px auto 0;padding-top:20px;border-top:1px solid #334157;text-align:center;color:#b9c7d9;font-size:13px}
+
+.modal{display:none;position:fixed;inset:0;z-index:2000;background:rgba(15,25,40,.6);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.login-box{width:100%;max-width:430px;background:#fff;border-radius:25px;padding:35px;position:relative;box-shadow:0 25px 70px rgba(0,0,0,.2)}
+.close-button{position:absolute;top:18px;right:18px;border:0;background:transparent;color:#64748b}
+.login-header{text-align:center;margin-bottom:25px}.login-logo{width:60px;height:60px;margin:0 auto 15px;background:var(--primary-light);color:var(--primary);border-radius:18px;display:flex;align-items:center;justify-content:center}
+.login-header h2{font-size:28px;margin-bottom:8px}.login-header p{color:var(--muted);font-size:14px}
+.form-group{margin-bottom:17px}.form-group label{display:block;margin-bottom:7px;font-size:14px;font-weight:600}
+.form-group input{width:100%;height:50px;border:1px solid #cbd5e1;border-radius:10px;padding:0 14px;outline:0}
+.password-wrapper{position:relative}.password-wrapper input{padding-right:45px}.show-password{position:absolute;right:12px;top:13px;border:0;background:transparent;color:#64748b}
+.submit-button{width:100%;height:50px;border:0;background:var(--primary);color:#fff;border-radius:11px;font-weight:600}
+.switch-login{text-align:center;margin-top:20px;color:var(--muted);font-size:14px}.switch-login button{border:0;background:transparent;color:var(--primary);font-weight:600}
+.login-message{text-align:center;margin-top:14px;font-size:14px}
+.toast{position:fixed;right:25px;bottom:25px;background:var(--dark);color:#fff;padding:15px 20px;border-radius:12px;box-shadow:0 10px 30px rgba(30,50,80,.08);transform:translateY(100px);opacity:0;transition:.3s;z-index:3000}
+.toast.show{transform:translateY(0);opacity:1}
+
+@media(max-width:1050px){.steps{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.info-grid,.result-grid{grid-template-columns:1fr}}
+@media(max-width:700px){
+ .navbar{height:70px;padding:0 15px}.desktop-nav{display:none}.menu-button{display:block}
+ .logo-icon{width:42px;height:42px}.logo-text h2{font-size:19px}.logo-text p{font-size:10px}
+ .hero{min-height:auto;padding:60px 20px}.hero h1{font-size:48px;letter-spacing:-2px}.hero h2{font-size:24px}
+ .hero-description{font-size:17px}.hero-buttons{flex-direction:column;width:100%}
+ .primary-button,.secondary-button{width:100%;max-width:360px;margin:auto}
+ .section{padding:60px 16px}.section-title h2{font-size:32px}.section-title p{font-size:16px}
+ .steps,.scan-options{grid-template-columns:1fr}.scan-option{min-height:180px}
+ .scan-header h1{font-size:32px}.scan-header p{font-size:16px}
+ .medicine-input-row,.camera-buttons{flex-direction:column}.add-button,.camera-buttons button{width:100%}
+ .analyze-buttons{grid-template-columns:1fr}.footer-content{flex-direction:column}.footer-links{flex-wrap:wrap}
+ .login-box{padding:28px 22px}.saved-item{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="logo-area">
+        <div class="logo-icon"><i data-lucide="heart-pulse"></i></div>
+        <div class="logo-text">
+            <h2>Second Chance</h2>
+            <p>A second look before your next dose</p>
+        </div>
+    </div>
+
+    <nav class="desktop-nav">
+        <a href="#home" class="nav-link active"><i data-lucide="home"></i>Home</a>
+        <a href="#scannerSection" class="nav-link"><i data-lucide="scan"></i>Scan</a>
+        <a href="#saved" class="nav-link"><i data-lucide="bookmark"></i>Saved</a>
+        <button class="login-button" id="loginButton"><i data-lucide="user"></i>Login</button>
+        <div class="user-area" id="userArea">
+            <span class="user-name" id="userName"></span>
+            <button class="logout-button" id="logoutButton">Logout</button>
+        </div>
+    </nav>
+
+    <button class="menu-button" id="menuButton"><i data-lucide="menu"></i></button>
+</header>
+
+<nav class="mobile-nav" id="mobileNav">
+    <a href="#home"><i data-lucide="home"></i>Home</a>
+    <a href="#scannerSection"><i data-lucide="scan"></i>Scan</a>
+    <a href="#saved"><i data-lucide="bookmark"></i>Saved</a>
+    <a href="#" id="mobileLogin"><i data-lucide="user"></i>Login</a>
+</nav>
+
+<main>
+
+<section class="hero" id="home">
+    <div class="badge"><i data-lucide="heart-pulse"></i>AI Medicine Safety Assistant</div>
+    <h1>Second Chance</h1>
+    <h2>A second look before your next dose.</h2>
+    <p class="hero-description">
+        Scan a prescription or medicine strip to understand the medicine,
+        check expiry information, and identify possible safety concerns.
+    </p>
+    <div class="hero-buttons">
+        <button class="primary-button" id="scanButton">
+            <i data-lucide="scan"></i>Scan Medicine
+        </button>
+        <button class="secondary-button" id="uploadButton">
+            <i data-lucide="upload"></i>Upload Prescription
+        </button>
+    </div>
+    <p class="hero-disclaimer">
+        Second Chance provides general medicine information and does not replace a doctor or pharmacist.
+    </p>
+</section>
+
+<section class="section">
+    <div class="section-title">
+        <h2>How it works</h2>
+        <p>Four simple steps from a photo to a clear, plain-language safety summary.</p>
+    </div>
+
+    <div class="steps">
+        <div class="step-card">
+            <div class="step-icon"><i data-lucide="scan"></i></div>
+            <h3>Step 1 — Scan</h3>
+            <p>Take a picture of the medicine strip or prescription.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-icon"><i data-lucide="eye"></i></div>
+            <h3>Step 2 — Read</h3>
+            <p>OCR extracts the medicine information automatically.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-icon"><i data-lucide="shield-check"></i></div>
+            <h3>Step 3 — Check</h3>
+            <p>AI analyzes the information for possible safety concerns.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-icon"><i data-lucide="message-square"></i></div>
+            <h3>Step 4 — Understand</h3>
+            <p>The result is explained in simple, everyday language.</p>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="scannerSection">
+<div class="scan-container">
+
+    <div class="scan-header">
+        <h1>Scan a medicine</h1>
+        <p>Take a clear photo of the medicine strip or upload a prescription image.</p>
+    </div>
+
+    <div class="scan-options">
+        <div class="scan-option camera-option" id="cameraOption">
+            <div class="scan-option-icon"><i data-lucide="camera"></i></div>
+            <h3>Open Camera</h3>
+            <p>Capture a medicine strip</p>
+        </div>
+
+        <div class="scan-option upload-option" id="uploadOption">
+            <div class="scan-option-icon"><i data-lucide="cloud-upload"></i></div>
+            <h3>Upload Image</h3>
+            <p>Choose a photo from your device</p>
+        </div>
+    </div>
+
+    <div class="camera-container" id="cameraContainer">
+        <video id="cameraVideo" autoplay playsinline></video>
+        <canvas id="cameraCanvas" hidden></canvas>
+        <div class="camera-buttons">
+            <button class="primary-button" id="captureButton">
+                <i data-lucide="camera"></i>Capture
+            </button>
+            <button class="secondary-button" id="closeCameraButton">Close Camera</button>
+        </div>
+    </div>
+
+    <input type="file" id="medicineImageInput" accept="image/*" hidden>
+
+    <div class="image-preview" id="imagePreview">
+        <h3>Selected Image</h3>
+        <img id="medicinePreviewImage" alt="Selected medicine image">
+        <button class="secondary-button" id="removeImageButton">Remove Image</button>
+    </div>
+
+    <div class="medicine-input-card">
+        <h3>What other medicines are you currently taking? <span>(optional)</span></h3>
+        <p>Add each medicine to check for well-known interactions.</p>
+
+        <div class="medicine-input-row">
+            <input type="text" id="otherMedicineInput" placeholder="e.g. Warfarin">
+            <button class="add-button" id="addMedicineButton">
+                <i data-lucide="plus"></i>Add
+            </button>
+        </div>
+        <div class="medicine-tags" id="medicineTags"></div>
+    </div>
+
+    <div class="analyze-buttons">
+        <button class="analyze-button" id="analyzeButton" disabled>
+            <i data-lucide="scan"></i>Analyze
+        </button>
+        <button class="demo-button" id="demoButton">
+            <i data-lucide="sparkles"></i>Try demo result
+        </button>
+    </div>
+
+    <div class="analysis-loading" id="analysisLoading">
+        <div class="loader"></div>
+        <h3>Analyzing medicine...</h3>
+        <p>Reading the medicine information and checking for possible safety concerns.</p>
+    </div>
+</div>
+</section>
+
+<section class="section" id="resultsSection">
+<div class="results-container">
+    <div class="section-title">
+        <h2>Medicine Safety Summary</h2>
+        <p>General information based on the uploaded medicine image.</p>
+    </div>
+
+    <div class="result-header">
+        <h2 id="medicineName">Medicine information</h2>
+        <p id="medicineSalt">Generic / salt composition will appear here</p>
+    </div>
+
+    <div class="result-grid">
+        <div class="result-card">
+            <h3>What is it used for?</h3>
+            <p id="usesResult">Common medicine uses will appear here.</p>
+        </div>
+
+        <div class="result-card">
+            <h3>Dosage Check</h3>
+            <span class="status warning"><i data-lucide="alert-triangle"></i>General Check</span>
+            <p>A dosage check requires reliable medicine reference information. This is not personalized medical advice.</p>
+        </div>
+
+        <div class="result-card">
+            <h3>Expiry Check</h3>
+            <span class="status warning"><i data-lucide="calendar"></i>Needs Verification</span>
+            <p id="expiryResult">Expiry information will appear after OCR processing.</p>
+        </div>
+
+        <div class="result-card">
+            <h3>Medicine Interactions</h3>
+            <p>Enter another medicine to flag possible well-known interactions.</p>
+            <input class="result-input" id="resultMedicineInput" placeholder="Example: Warfarin">
+            <button class="small-action" id="resultInteractionButton">Check Interaction</button>
+            <p id="resultInteraction" style="margin-top:12px;"></p>
+        </div>
+
+        <div class="result-card">
+            <h3>Medicine Authenticity</h3>
+            <span class="status warning"><i data-lucide="alert-triangle"></i>Verification Recommended</span>
+            <p>An image or batch number alone cannot confirm that a medicine is genuine. Verify it with the manufacturer or a licensed pharmacist.</p>
+        </div>
+
+        <div class="result-card">
+            <h3>Safety Notice</h3>
+            <span class="status warning"><i data-lucide="shield-alert"></i>Important</span>
+            <p>Do not start, stop, or change a medicine based only on this application.</p>
+        </div>
+    </div>
+
+    <br>
+    <button class="primary-button" id="saveMedicineButton">
+        <i data-lucide="bookmark"></i>Save Result
+    </button>
+</div>
+</section>
+
+<section class="section">
+    <div class="info-grid">
+        <div class="info-card">
+            <div class="info-icon"><i data-lucide="lock"></i></div>
+            <div>
+                <h3>Your privacy is protected</h3>
+                <p>Your prescription or medicine image may contain sensitive information. We process it only to provide the requested information and avoid storing it unnecessarily.</p>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon"><i data-lucide="stethoscope"></i></div>
+            <div>
+                <h3>What Second Chance is not</h3>
+                <p>Not a doctor, pharmacist, diagnosis, or prescription system. It informs and flags — it never tells you to start, stop, or change a medicine.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="saved-section" id="saved">
+    <div class="saved-container">
+        <div class="section-title">
+            <h2>Saved Medicines</h2>
+            <p>Your saved medicine information.</p>
+        </div>
+
+        <div class="saved-empty" id="savedContainer">
+            <i data-lucide="bookmark"></i><br><br>
+            No saved medicines yet.
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer>
+    <div class="footer-content">
+        <div>
+            <h3>Second Chance</h3>
+            <p>A second look before your next dose.</p>
+        </div>
+        <div class="footer-links">
+            <a href="#home">Home</a>
+            <a href="#scannerSection">Scan</a>
+            <a href="#saved">Saved</a>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        This is general information only. Please confirm with a licensed pharmacist or doctor before making any decisions.
+    </div>
+</footer>
+
+<div class="modal" id="loginModal">
+    <div class="login-box">
+        <button class="close-button" id="closeModal"><i data-lucide="x"></i></button>
+
+        <div class="login-header">
+            <div class="login-logo"><i data-lucide="heart-pulse"></i></div>
+            <h2 id="formTitle">Welcome Back</h2>
+            <p id="formSubtitle">Login to save and manage your medicine information.</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group" id="nameGroup" style="display:none;">
+                <label>Full Name</label>
+                <input type="text" id="name" placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                    <button type="button" class="show-password" id="showPassword">
+                        <i data-lucide="eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-button" id="submitButton">Login</button>
+            <p class="login-message" id="loginMessage"></p>
+
+            <div class="switch-login">
+                <span id="switchText">Don't have an account?</span>
+                <button type="button" id="switchButton">Create Account</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="toast" id="toast">Done!</div>
+
+<script>
+lucide.createIcons();
+
+const $ = id => document.getElementById(id);
+
+let cameraStream = null;
+let selectedImage = null;
+let otherMedicines = [];
+let registerMode = false;
+
+/* Mobile menu */
+$("menuButton").addEventListener("click", () => $("mobileNav").classList.toggle("show"));
+document.querySelectorAll(".mobile-nav a").forEach(a => a.addEventListener("click", () => $("mobileNav").classList.remove("show")));
+
+/* Toast */
+function showToast(message){
+    $("toast").textContent = message;
+    $("toast").classList.add("show");
+    setTimeout(() => $("toast").classList.remove("show"), 2500);
+}
+
+/* Login */
+function openLogin(){
+    $("loginModal").classList.add("show");
+    $("mobileNav").classList.remove("show");
+}
+$("loginButton").addEventListener("click", openLogin);
+$("mobileLogin").addEventListener("click", e => { e.preventDefault(); openLogin(); });
+$("closeModal").addEventListener("click", () => $("loginModal").classList.remove("show"));
+$("loginModal").addEventListener("click", e => {
+    if(e.target === $("loginModal")) $("loginModal").classList.remove("show");
+});
+
+$("switchButton").addEventListener("click", () => {
+    registerMode = !registerMode;
+    $("loginMessage").textContent = "";
+
+    if(registerMode){
+        $("formTitle").textContent = "Create Account";
+        $("formSubtitle").textContent = "Create an account to save your medicine information.";
+        $("nameGroup").style.display = "block";
+        $("name").required = true;
+        $("submitButton").textContent = "Create Account";
+        $("switchText").textContent = "Already have an account?";
+        $("switchButton").textContent = "Login";
+    }else{
+        $("formTitle").textContent = "Welcome Back";
+        $("formSubtitle").textContent = "Login to save and manage your medicine information.";
+        $("nameGroup").style.display = "none";
+        $("name").required = false;
+        $("submitButton").textContent = "Login";
+        $("switchText").textContent = "Don't have an account?";
+        $("switchButton").textContent = "Create Account";
+    }
+});
+
+$("showPassword").addEventListener("click", () => {
+    $("password").type = $("password").type === "password" ? "text" : "password";
+});
+
+$("loginForm").addEventListener("submit", e => {
+    e.preventDefault();
+
+    const email = $("email").value.trim();
+    const password = $("password").value;
+
+    if(registerMode){
+        const name = $("name").value.trim();
+
+        if(!name || !email || !password){
+            $("loginMessage").style.color = "#dc5353";
+            $("loginMessage").textContent = "Please fill all fields.";
+            return;
+        }
+
+        if(password.length < 6){
+            $("loginMessage").style.color = "#dc5353";
+            $("loginMessage").textContent = "Password must contain at least 6 characters.";
+            return;
+        }
+
+        localStorage.setItem("secondChanceUser", JSON.stringify({name,email}));
+        $("loginMessage").style.color = "#2c9b62";
+        $("loginMessage").textContent = "Account created successfully!";
+
+        setTimeout(() => {
+            $("loginModal").classList.remove("show");
+            updateUser();
+            showToast("Welcome to Second Chance!");
+        }, 700);
+    }else{
+        const user = JSON.parse(localStorage.getItem("secondChanceUser"));
+
+        if(!user){
+            $("loginMessage").style.color = "#dc5353";
+            $("loginMessage").textContent = "No account found. Please create an account.";
+            return;
+        }
+
+        if(email !== user.email){
+            $("loginMessage").style.color = "#dc5353";
+            $("loginMessage").textContent = "Incorrect email.";
+            return;
+        }
+
+        $("loginMessage").style.color = "#2c9b62";
+        $("loginMessage").textContent = "Login successful!";
+
+        setTimeout(() => {
+            $("loginModal").classList.remove("show");
+            updateUser();
+            showToast("Login successful!");
+        }, 700);
+    }
+});
+
+function updateUser(){
+    const user = JSON.parse(localStorage.getItem("secondChanceUser"));
+
+    if(user){
+        $("loginButton").style.display = "none";
+        $("userArea").style.display = "flex";
+        $("userName").textContent = "Hi, " + user.name;
+    }else{
+        $("loginButton").style.display = "flex";
+        $("userArea").style.display = "none";
+    }
+}
+
+$("logoutButton").addEventListener("click", () => {
+    localStorage.removeItem("secondChanceUser");
+    updateUser();
+    showToast("You have been logged out.");
+});
+
+/* Open scanner */
+function openScanner(){
+    $("scannerSection").style.display = "block";
+    $("scannerSection").scrollIntoView({behavior:"smooth"});
+}
+$("scanButton").addEventListener("click", openScanner);
+
+/* Upload from home */
+$("uploadButton").addEventListener("click", () => {
+    openScanner();
+    setTimeout(() => $("medicineImageInput").click(), 350);
+});
+
+/* Camera */
+$("cameraOption").addEventListener("click", async () => {
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+        alert("Camera is not supported by this browser. Please use Upload Image.");
+        return;
+    }
+
+    try{
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+            video:{facingMode:{ideal:"environment"}},
+            audio:false
+        });
+
+        $("cameraVideo").srcObject = cameraStream;
+        $("cameraContainer").style.display = "block";
+        $("cameraContainer").scrollIntoView({behavior:"smooth"});
+    }catch(error){
+        alert("Camera could not be opened. Please allow camera permission or use Upload Image.");
+    }
+});
+
+function closeCamera(){
+    if(cameraStream){
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+    $("cameraVideo").srcObject = null;
+    $("cameraContainer").style.display = "none";
+}
+$("closeCameraButton").addEventListener("click", closeCamera);
+
+$("captureButton").addEventListener("click", () => {
+    if(!cameraStream) return;
+
+    const video = $("cameraVideo");
+    const canvas = $("cameraCanvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    canvas.getContext("2d").drawImage(video,0,0,canvas.width,canvas.height);
+
+    canvas.toBlob(blob => {
+        selectedImage = blob;
+        $("medicinePreviewImage").src = URL.createObjectURL(blob);
+        $("imagePreview").style.display = "block";
+        enableAnalyze();
+        closeCamera();
+        showToast("Medicine image captured!");
+    }, "image/jpeg", .92);
+});
+
+/* Upload */
+$("uploadOption").addEventListener("click", () => $("medicineImageInput").click());
+
+$("medicineImageInput").addEventListener("change", event => {
+    const file = event.target.files[0];
+    if(!file) return;
+
+    if(!file.type.startsWith("image/")){
+        showToast("Please select an image.");
+        return;
+    }
+
+    selectedImage = file;
+    const reader = new FileReader();
+
+    reader.onload = e => {
+        $("medicinePreviewImage").src = e.target.result;
+        $("imagePreview").style.display = "block";
+        enableAnalyze();
+        showToast("Image uploaded successfully!");
+    };
+
+    reader.readAsDataURL(file);
+});
+
+$("removeImageButton").addEventListener("click", () => {
+    selectedImage = null;
+    $("medicineImageInput").value = "";
+    $("medicinePreviewImage").src = "";
+    $("imagePreview").style.display = "none";
+    disableAnalyze();
+});
+
+function enableAnalyze(){
+    $("analyzeButton").disabled = false;
+    $("analyzeButton").classList.add("enabled");
+}
+function disableAnalyze(){
+    $("analyzeButton").disabled = true;
+    $("analyzeButton").classList.remove("enabled");
+}
+
+/* Other medicines */
+function addMedicine(){
+    const medicine = $("otherMedicineInput").value.trim();
+    if(!medicine) return;
+
+    if(!otherMedicines.includes(medicine)){
+        otherMedicines.push(medicine);
+        $("otherMedicineInput").value = "";
+        renderMedicineTags();
+    }
+}
+
+$("addMedicineButton").addEventListener("click", addMedicine);
+$("otherMedicineInput").addEventListener("keydown", e => {
+    if(e.key === "Enter"){
+        e.preventDefault();
+        addMedicine();
+    }
+});
+
+function renderMedicineTags(){
+    $("medicineTags").innerHTML = "";
+
+    otherMedicines.forEach((medicine,index) => {
+        const tag = document.createElement("div");
+        tag.className = "medicine-tag";
+        tag.innerHTML = `${escapeHtml(medicine)}
+            <button type="button" data-index="${index}" aria-label="Remove medicine">×</button>`;
+        tag.querySelector("button").addEventListener("click", () => {
+            otherMedicines.splice(index,1);
+            renderMedicineTags();
+        });
+        $("medicineTags").appendChild(tag);
+    });
+}
+
+/* Analyze demo */
+$("analyzeButton").addEventListener("click", () => {
+    if(!selectedImage){
+        showToast("Please scan or upload a medicine image first.");
+        return;
+    }
+
+    $("analysisLoading").style.display = "block";
+    $("analysisLoading").scrollIntoView({behavior:"smooth"});
+
+    setTimeout(() => {
+        $("analysisLoading").style.display = "none";
+        showMedicineResult();
+    }, 2000);
+});
+
+$("demoButton").addEventListener("click", showMedicineResult);
+
+function showMedicineResult(){
+    $("medicineName").textContent = "Medicine information";
+    $("medicineSalt").textContent = "Generic / salt composition will appear here";
+    $("usesResult").textContent = "The medicine's common uses will be explained here in simple language after OCR and AI processing.";
+    $("expiryResult").textContent = "The expiry date will be extracted from the medicine image and checked against the current date.";
+
+    $("resultsSection").style.display = "block";
+    $("resultsSection").scrollIntoView({behavior:"smooth"});
+    lucide.createIcons();
+}
+
+/* Interaction demo */
+$("resultInteractionButton").addEventListener("click", () => {
+    const medicine = $("resultMedicineInput").value.trim();
+
+    if(!medicine){
+        $("resultInteraction").style.color = "#dc5353";
+        $("resultInteraction").textContent = "Please enter another medicine.";
+        return;
+    }
+
+    $("resultInteraction").style.color = "#e99b27";
+    $("resultInteraction").textContent =
+        "A real interaction check requires a reliable medicine database. Please confirm possible interactions with a licensed pharmacist or doctor.";
+});
+
+/* Save */
+$("saveMedicineButton").addEventListener("click", () => {
+    const medicine = {
+        name:$("medicineName").textContent,
+        generic:$("medicineSalt").textContent,
+        savedAt:new Date().toLocaleString()
+    };
+
+    localStorage.setItem("secondChanceMedicine", JSON.stringify(medicine));
+    displaySavedMedicine();
+    showToast("Medicine result saved!");
+});
+
+function displaySavedMedicine(){
+    const medicine = JSON.parse(localStorage.getItem("secondChanceMedicine"));
+
+    if(!medicine) return;
+
+    $("savedContainer").innerHTML = `
+        <div class="saved-item">
+            <div>
+                <h3>${escapeHtml(medicine.name)}</h3>
+                <p>${escapeHtml(medicine.generic)}</p>
+                <p>Saved: ${escapeHtml(medicine.savedAt)}</p>
+            </div>
+            <button class="delete-saved" id="deleteSaved">Delete</button>
+        </div>
+    `;
+
+    $("deleteSaved").addEventListener("click", () => {
+        localStorage.removeItem("secondChanceMedicine");
+        $("savedContainer").innerHTML = `
+            <div class="saved-empty">
+                <i data-lucide="bookmark"></i><br><br>
+                No saved medicines yet.
+            </div>
+        `;
+        lucide.createIcons();
+        showToast("Saved medicine deleted.");
+    });
+}
+
+function escapeHtml(value){
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+updateUser();
+displaySavedMedicine();
+lucide.createIcons();
+</script>
+
+</body>
+</html>
